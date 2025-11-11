@@ -1,0 +1,34 @@
+{
+  "name": "telegram-bot-cloudflare",
+  "version": "1.0.0",
+  "description": "Bot Telegram avec Cloudflare D1 et panel d'administration complet",
+  "main": "bot.js",
+  "scripts": {
+    "start": "node bot.js",
+    "dev": "nodemon bot.js",
+    "deploy": "wrangler publish",
+    "db:migrate": "wrangler d1 execute telegram-bot-db --file=./schema.sql"
+  },
+  "keywords": [
+    "telegram",
+    "bot",
+    "cloudflare",
+    "d1",
+    "admin-panel"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@cloudflare/workers-types": "^4.20240117.0",
+    "dotenv": "^16.6.1",
+    "node-telegram-bot-api": "^0.64.0"
+  },
+  "optionalDependencies": {
+    "node-fetch": "^2.6.7",
+    "sqlite3": "^5.1.6"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2",
+    "wrangler": "^3.22.4"
+  }
+}

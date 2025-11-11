@@ -1,0 +1,48 @@
+# Dépendances
+node_modules/
+
+# Variables d'environnement
+.env
+.env.local
+.env.production
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Répertoires de build
+dist/
+build/
+.wrangler/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Base de données locale
+*.db
+*.sqlite
+
+# Fichiers temporaires
+tmp/
+temp/
+
+# Cloudflare
+.mf/
+.wrangler/
+
+# PM2
+.pm2/
+
+# Sauvegardes
+*.backup
+*.bak

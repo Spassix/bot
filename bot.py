@@ -1,10 +1,12 @@
 import logging
 import os
 import json
+import asyncio
 from dotenv import load_dotenv
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, BotCommand, WebAppInfo
 from telegram.ext import Application, CommandHandler, CallbackQueryHandler, ContextTypes
 from telegram.constants import ParseMode
+from telegram.error import Conflict
 
 # Charger les variables d'environnement
 load_dotenv()
@@ -193,6 +195,15 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
     await query.answer()
 
 
+async def error_handler(update: object, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Gère les erreurs"""
+    logger.error(f"Exception while handling an update: {context.error}")
+    if isinstance(context.error, Conflict):
+        logger.warning("Conflit détecté: une autre instance du bot est en cours d'exécution")
+        # Attendre un peu avant de réessayer
+        await asyncio.sleep(5)
+
+
 def main() -> None:
     """Fonction principale pour démarrer le bot"""
     # Créer l'application
@@ -202,6 +213,9 @@ def main() -> None:
     application.add_handler(CommandHandler("start", start))
     application.add_handler(CommandHandler("broadcast", broadcast))
     application.add_handler(CallbackQueryHandler(button_callback))
+    
+    # Ajouter le gestionnaire d'erreurs
+    application.add_error_handler(error_handler)
     
     # Définir les commandes du bot
     commands = [
@@ -214,9 +228,40 @@ def main() -> None:
     
     application.post_init = post_init
     
-    # Démarrer le bot
-    logger.info("Bot démarré...")
-    application.run_polling(allowed_updates=Update.ALL_TYPES)
+    # Vérifier si on est sur Render (utiliser webhook) ou en local (utiliser polling)
+    render_external_url = os.getenv("RENDER_EXTERNAL_URL")
+    render_port = os.getenv("PORT", "8000")
+    
+    if render_external_url:
+        # Mode webhook pour Render
+        webhook_url = f"{render_external_url}/webhook"
+        logger.info(f"Mode webhook activé: {webhook_url}")
+        
+        async def webhook_post_init(app: Application) -> None:
+            await post_init(app)
+            await app.bot.set_webhook(url=webhook_url)
+            logger.info("Webhook configuré avec succès")
+        
+        application.post_init = webhook_post_init
+        
+        # Démarrer le serveur webhook
+        application.run_webhook(
+            listen="0.0.0.0",
+            port=int(render_port),
+            webhook_url=webhook_url,
+            allowed_updates=Update.ALL_TYPES
+        )
+    else:
+        # Mode polling pour le développement local
+        logger.info("Mode polling activé (développement local)")
+        try:
+            application.run_polling(
+                allowed_updates=Update.ALL_TYPES,
+                drop_pending_updates=True  # Ignorer les mises à jour en attente
+            )
+        except Conflict as e:
+            logger.error(f"Conflit: {e}")
+            logger.info("Arrêtez l'autre instance du bot avant de relancer")
 
 
 if __name__ == '__main__':

@@ -1,9 +1,10 @@
 services:
-  - type: worker
+  - type: web
     name: telegram-bot
     env: python
     buildCommand: pip install -r requirements.txt
     startCommand: python bot.py
+    plan: free
     envVars:
       - key: BOT_TOKEN
         sync: false
@@ -17,4 +18,5 @@ services:
         sync: false
       - key: ZANGI_URL
         sync: false
+
 

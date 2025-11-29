@@ -21,10 +21,17 @@ cp .env.example .env
 
 4. Ajoutez l'image du logo dans le dossier (nommée `pharmhashi_logo.png`)
 
-5. Lancez le bot :
+5. **IMPORTANT** : Si vous déployez sur Render, arrêtez le bot local pour éviter les conflits.
+
+6. Lancez le bot :
 ```bash
 python bot.py
 ```
+
+**Note pour le déploiement sur Render :**
+- Le bot utilise automatiquement les webhooks sur Render
+- Assurez-vous que le bot local est arrêté avant de déployer sur Render
+- Les variables d'environnement doivent être configurées dans les paramètres Render
 
 ## Fonctionnalités
 

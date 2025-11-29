@@ -1,0 +1,29 @@
+# Fichiers de données utilisateurs
+users.json
+
+# Variables d'environnement
+.env
+
+# Images
+*.png
+*.jpg
+*.jpeg
+*.gif
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+.venv
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
